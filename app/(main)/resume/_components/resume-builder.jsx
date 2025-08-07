@@ -23,7 +23,6 @@ import useFetch from "@/hooks/use-fetch";
 import { useUser } from "@clerk/nextjs";
 import { entriesToMarkdown } from "@/app/lib/helper";
 import { resumeSchema } from "@/app/lib/schema";
-import { html2pdf } from "html2pdf.js";
 
 export default function ResumeBuilder({ initialContent }) {
   const [activeTab, setActiveTab] = useState("edit");
@@ -113,24 +112,25 @@ export default function ResumeBuilder({ initialContent }) {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const generatePDF = async () => {
-    setIsGenerating(true);
-    try {
-      const element = document.getElementById("resume-pdf");
-      const opt = {
-        margin: [15, 15],
-        filename: "resume.pdf",
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      };
+  setIsGenerating(true);
+  try {
+    const element = document.getElementById("resume-pdf");
+    const html2pdf = (await import("html2pdf.js")).default;
+    const opt = {
+      margin: [15, 15],
+      filename: "resume.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
 
-      await html2pdf().set(opt).from(element).save();
-    } catch (error) {
-      console.error("PDF generation error:", error);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+    await html2pdf().set(opt).from(element).save();
+  } catch (error) {
+    console.error("PDF generation error:", error);
+  } finally {
+    setIsGenerating(false);
+  }
+};
 
   const onSubmit = async (data) => {
     try {
@@ -148,6 +148,13 @@ export default function ResumeBuilder({ initialContent }) {
 
   return (
     <div data-color-mode="light" className="space-y-4">
+      {/* Style override for PDF export to prevent unsupported color functions */}
+      <style>{`
+        #resume-pdf, #resume-pdf * {
+          background: white !important;
+          color: black !important;
+        }
+      `}</style>
       <div className="flex flex-col md:flex-row justify-between items-center gap-2">
         <h1 className="font-bold gradient-title text-5xl md:text-6xl">
           Resume Builder
@@ -403,12 +410,19 @@ export default function ResumeBuilder({ initialContent }) {
           </div>
           <div className="hidden">
             <div id="resume-pdf">
+              {/* PDF export style override to prevent unsupported color functions */}
+              <style>{`
+                #resume-pdf, #resume-pdf * {
+                  background: white !important;
+                  background-color: white !important;
+                  color: black !important;
+                  border-color: black !important;
+                  box-shadow: none !important;
+                }
+              `}</style>
               <MDEditor.Markdown
                 source={previewContent}
-                style={{
-                  background: "white",
-                  color: "black",
-                }}
+                style={{ background: "white", color: "black" }}
               />
             </div>
           </div>
