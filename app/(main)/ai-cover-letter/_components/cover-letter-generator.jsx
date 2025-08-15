@@ -59,6 +59,21 @@ export default function CoverLetterGenerator() {
 
   return (
     <div className="space-y-6">
+      {/* PDF export style override to prevent unsupported color functions */}
+      <style>{`
+        #cover-letter-pdf, #cover-letter-pdf * {
+          background: #ffffff !important;
+          background-color: #ffffff !important;
+          color: #000000 !important;
+          border-color: #000000 !important;
+          box-shadow: none !important;
+        }
+        #cover-letter-pdf .bg-background { background-color: #ffffff !important; }
+        #cover-letter-pdf .bg-card { background-color: #ffffff !important; }
+        #cover-letter-pdf .text-foreground { color: #000000 !important; }
+        #cover-letter-pdf .text-card-foreground { color: #000000 !important; }
+        #cover-letter-pdf .border-border { border-color: #000000 !important; }
+      `}</style>
       <Card>
         <CardHeader>
           <CardTitle>Job Details</CardTitle>
@@ -125,6 +140,13 @@ export default function CoverLetterGenerator() {
                   "Generate Cover Letter"
                 )}
               </Button>
+            </div>
+            {/* Hidden export container for PDF/image generation */}
+            <div className="hidden">
+              <div id="cover-letter-pdf">
+                {/* Place your cover letter preview here for export */}
+                {/* Example: <div style={{background: 'white', color: 'black'}}>Your cover letter content</div> */}
+              </div>
             </div>
           </form>
         </CardContent>

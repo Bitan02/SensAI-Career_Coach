@@ -16,7 +16,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider >
+    <ClerkProvider
+      appearance={{
+        baseTheme: undefined,
+        variables: {
+          colorPrimary: '#3b82f6',
+        },
+      }}
+    >
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${inter.className}`}
